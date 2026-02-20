@@ -68,6 +68,7 @@ jobs:
           files: target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm
           gpg_public_key: "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}"
           repo_baseurl: "${{ vars.PKG_01_CENTRAL_BASEURL }}"
+          repo_name: "teragrep-${{ matrix.os }}-releases"
         env:
           has_deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY != '' }}
         if: ${{ env.has_deploy_key == 'true' }}
