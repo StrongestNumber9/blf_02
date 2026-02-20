@@ -56,6 +56,16 @@ jobs:
         with:
           files: target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm
 
+      - name: Copy artifacts to workspace for later use
+        run: mkdir --parents "${{ github.workspace }}/rpm/" && cp --archive --verbose target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm "${{ github.workspace }}/rpm/";
+
+  update_repo:
+    name: Update repo
+    needs: upload
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
       - name: Update pkg_01 releases repository
         uses: teragrep/dfg_01@3.3.0
         with:
@@ -64,9 +74,9 @@ jobs:
           to_repository: "${{ github.repository_owner }}/pkg_01"
           to_path: "rocky/${{ env.ROCKY_VERSION }}"
           deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY }}
-          files: target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm
+          files: "${{ github.workspace }}/rpm/*.rpm"
           gpg_public_key: "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}"
           repo_baseurl: "${{ vars.PKG_01_CENTRAL_BASEURL }}"
         env:
           has_deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY != '' }}
-        if: ${{ env.has_deploy_key == 'DISABLEDtrue' }}
+        if: ${{ env.has_deploy_key == 'true' }}
