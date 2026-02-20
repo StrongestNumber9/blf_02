@@ -57,6 +57,10 @@
           <defaultGroupname>root</defaultGroupname>
           <defaultFilemode>0644</defaultFilemode>
           <defaultDirmode>0755</defaultDirmode>
+          <keyname>${env.RPM_SIGNING_KEYNAME}</keyname>
+          <keyPassphrase>
+            <passphrase>${env.RPM_SIGNING_PASSPHRASE}</passphrase>
+          </keyPassphrase>
           <defineStatements>
             <!-- _python_bytecompile_extra 0 doesn't work so we take the original script and just replace what we do not want -->
             <defineStatement>__os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')</defineStatement>
@@ -119,10 +123,15 @@
       </plugin>
     </plugins>
   </build>
-  <distributionManagement>
-    <repository>
-      <id>github</id>
-      <url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
-    </repository>
-  </distributionManagement>
+  <!-- Required when publishing to GitHub Packages -->
+  <profile>
+    <id>publish-github-packages</id>
+    <distributionManagement>
+      <repository>
+        <id>github</id>
+        <name>GitHub Packages</name>
+        <url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
+      </repository>
+    </distributionManagement>
+  </profile>
 </project>
