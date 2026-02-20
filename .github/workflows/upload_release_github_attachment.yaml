@@ -16,6 +16,7 @@ jobs:
         ]
     container:
       image: ${{ matrix.versions.container }}
+      options: "-t"
     permissions:
       contents: write
 
@@ -29,7 +30,6 @@ jobs:
 
       - name: Prepare RPM GPG signing
         run: |
-          dnf --assumeyes install expect pinentry-tty;
           printf "RPM_SIGNING_KEYNAME=%q\n" "$(echo "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}" | gpg --show-keys --with-colons | awk -F':' '/uid/{print $10}')" >> $GITHUB_ENV;
           echo "${{ secrets.RPM_SIGNING_PRIVATE_KEY }}" | gpg --batch --import;
           echo "%_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase \"%{getenv:RPM_SIGNING_PASSPHRASE}\"" >> "${HOME}/.rpmmacros";
