@@ -30,3 +30,4 @@ jobs:
           CFLAGS="-mavx2 -O3" bash configure;
           make;
           make install DESTDIR="${{ github.workspace }}/buildroot";
+          ls -laF buildroot/;
