@@ -8,6 +8,7 @@ jobs:
   upload:
     name: Build and upload release
     runs-on: ubuntu-latest
+    max-parallel: 1
     strategy:
       matrix:
         os: [ "el8", "el9" ]
