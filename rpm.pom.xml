@@ -5,7 +5,7 @@
   <packaging>rpm</packaging>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>blf_02</artifactId>
-  <version>${revision}${sha1}${changelist}.el8</version>
+  <version>${revision}${sha1}${changelist}.${env.OS_VERSION}</version>
   <name>blf_02</name>
   <description>Teragrep Bloom Filter Plugin for MariaDB</description>
   <groupId>com.teragrep</groupId>
@@ -45,7 +45,7 @@
           <summary>${project.groupId}-${project.artifactId}</summary>
           <name>${project.groupId}-${project.artifactId}</name>
           <version>${project.version}</version>
-          <release>${env.GITHUB_RUN_NUMBER}</release>
+          <release>{env.BUILD_ID}</release>
           <license>Proprietary</license>
           <distribution>Fail-Safe Log Management Suite</distribution>
           <vendor>https://fail-safe.net/</vendor>
