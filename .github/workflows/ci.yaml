@@ -25,4 +25,5 @@ jobs:
           autoreconf -fvi;
           CFLAGS="-mavx2 -O3" bash configure;
           make;
-          make install DESTDIR=buildroot;
+          make install;
+          ls -laF .;
