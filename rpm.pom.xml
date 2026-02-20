@@ -45,7 +45,7 @@
           <summary>${project.groupId}-${project.artifactId}</summary>
           <name>${project.groupId}-${project.artifactId}</name>
           <version>${project.version}</version>
-          <release>{env.BUILD_ID}</release>
+          <release>${env.BUILD_ID}</release>
           <license>Proprietary</license>
           <distribution>Fail-Safe Log Management Suite</distribution>
           <vendor>https://fail-safe.net/</vendor>
@@ -62,8 +62,6 @@
             <passphrase>${env.RPM_SIGNING_PASSPHRASE}</passphrase>
           </keyPassphrase>
           <defineStatements>
-            <!-- _python_bytecompile_extra 0 doesn't work so we take the original script and just replace what we do not want -->
-            <defineStatement>__os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')</defineStatement>
             <defineStatement>_build_id_links none</defineStatement>
           </defineStatements>
           <mappings>
