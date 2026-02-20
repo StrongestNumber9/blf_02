@@ -5,14 +5,14 @@ on:
     types: [published]
 
 jobs:
-  strategy:
-    matrix:
-      versions: [
-        { "container": "rockylinux/rockylinux:8", "dnf_command": "dnf --assumeyes install maven rpm-build make automake autoconf libtool mariadb-devel" },
-        { "container": "rockylinux/rockylinux:9", "dnf_command": "dnf --assumeyes --enablerepo=devel install maven rpm-build make automake autoconf libtool mariadb-devel" }
-      ]
   upload:
     name: Upload
+    strategy:
+      matrix:
+        versions: [
+          { "container": "rockylinux/rockylinux:8", "dnf_command": "dnf --assumeyes install maven rpm-build make automake autoconf libtool mariadb-devel" },
+          { "container": "rockylinux/rockylinux:9", "dnf_command": "dnf --assumeyes --enablerepo=devel install maven rpm-build make automake autoconf libtool mariadb-devel" }
+        ]
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.versions.container }}
@@ -56,16 +56,6 @@ jobs:
         with:
           files: target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm
 
-      - name: Copy artifacts to workspace for later use
-        run: mkdir --parents "${{ github.workspace }}/rpm/" && cp --archive --verbose target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm "${{ github.workspace }}/rpm/";
-
-  update_repo:
-    name: Update repo
-    needs: upload
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
       - name: Update pkg_01 releases repository
         uses: teragrep/dfg_01@3.3.0
         with:
