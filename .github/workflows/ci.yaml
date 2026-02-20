@@ -8,15 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: ["rockylinux/rockylinux:8", "rockylinux/rockylinux:9"]
-        with:
-          - container: "rockylinux/rockylinux:8"
-            dnf_command: "dnf --assumeyes install make automake autoconf libtool mariadb-devel"
-          - container: "rockylinux/rockylinux:9"
-            dnf_command: "dnf --assumeyes --enablerepo=devel install make automake autoconf libtool mariadb-devel"
+        versions: [
+          { "container": "rockylinux/rockylinux:8", "dnf_command": "dnf --assumeyes install make automake autoconf libtool mariadb-devel" },
+          { "container": "rockylinux/rockylinux:9", "dnf_command": "dnf --assumeyes --enablerepo=devel install make automake autoconf libtool mariadb-devel" }
+        ]
 
     container:
-      image: ${{ matrix.container }}
+      image: ${{ matrix.versions.container }}
 
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
-        run: ${{ matrix.dnf_command }}
+        run: ${{ matrix.versions.dnf_command }}
 
       - name: Build the project
         run: |
