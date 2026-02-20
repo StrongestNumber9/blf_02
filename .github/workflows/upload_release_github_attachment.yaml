@@ -1,0 +1,69 @@
+name: Upload Artifact as GitHub Release Attachment
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  upload:
+    name: Upload
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: ["rockylinux/rockylinux:8", "rockylinux/rockylinux:9"]
+    container:
+      image: ${{ matrix.container }}
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: sudo dnf -y install make automake autoconf libtool mariadb-devel;
+
+      - name: Prepare RPM GPG signing
+        run: |
+          sudo dnf install expect pinentry-tty;
+          printf "RPM_SIGNING_KEYNAME=%q\n" "$(echo "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}" | gpg --show-keys --with-colons | awk -F':' '/uid/{print $10}')" >> $GITHUB_ENV;
+          echo "${{ secrets.RPM_SIGNING_PRIVATE_KEY }}" | gpg --batch --import;
+          echo "%_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase \"%{getenv:RPM_SIGNING_PASSPHRASE}\"" >> "${HOME}/.rpmmacros";
+
+      - name: Extract major Rocky version
+        run: |
+          source /etc/os-release;
+          printf "ROCKY_VERSION=%q\n" "${VERSION_ID%.*}" >> $GITHUB_ENV;
+
+      - name: Build the project and create the rpm
+        run: |
+          autoreconf -fvi;
+          CFLAGS="-mavx2 -O3" bash configure;
+          make;
+          make install DESTDIR=buildroot;
+          mvn --batch-mode -Dos_version=${{ env.ROCKY_VERSION }} -Drevision=${{ github.event.release.tag_name }} -Dsha1= -Dchangelist= -f rpm.pom.xml package;
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RPM_SIGNING_KEYNAME: ${{ env.RPM_SIGNING_KEYNAME }}
+          RPM_SIGNING_PASSPHRASE: ${{ secrets.RPM_SIGNING_PASSPHRASE }}
+
+      - name: Attach rpm to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm
+
+      - name: Update pkg_01 releases repository
+        uses: teragrep/dfg_01@3.3.0
+        with:
+          from_repository: "${{ github.repository }}"
+          from_version: "${{ github.event.release.tag_name }}"
+          to_repository: "${{ github.repository_owner }}/pkg_01"
+          to_path: "rocky/${{ env.ROCKY_VERSION }}"
+          deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY }}
+          files: target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm
+          gpg_public_key: "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}"
+          repo_baseurl: "${{ vars.PKG_01_CENTRAL_BASEURL }}"
+        env:
+          has_deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY != '' }}
+        if: ${{ env.has_deploy_key == 'true' }}

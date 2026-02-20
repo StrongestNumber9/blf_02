@@ -5,7 +5,7 @@
   <packaging>rpm</packaging>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>blf_02</artifactId>
-  <version>${revision}${sha1}${changelist}.el8</version>
+  <version>${revision}${sha1}${changelist}.el${os_version}</version>
   <name>blf_02</name>
   <description>Teragrep Bloom Filter Plugin for MariaDB</description>
   <groupId>com.teragrep</groupId>
