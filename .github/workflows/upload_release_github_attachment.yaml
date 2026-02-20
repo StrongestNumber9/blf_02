@@ -22,11 +22,11 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
-        run: sudo dnf -y install make automake autoconf libtool mariadb-devel;
+        run: dnf -y install make automake autoconf libtool mariadb-devel;
 
       - name: Prepare RPM GPG signing
         run: |
-          sudo dnf install expect pinentry-tty;
+          dnf install expect pinentry-tty;
           printf "RPM_SIGNING_KEYNAME=%q\n" "$(echo "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}" | gpg --show-keys --with-colons | awk -F':' '/uid/{print $10}')" >> $GITHUB_ENV;
           echo "${{ secrets.RPM_SIGNING_PRIVATE_KEY }}" | gpg --batch --import;
           echo "%_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase \"%{getenv:RPM_SIGNING_PASSPHRASE}\"" >> "${HOME}/.rpmmacros";
