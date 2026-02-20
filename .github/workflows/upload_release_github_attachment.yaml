@@ -74,7 +74,7 @@ jobs:
           to_repository: "${{ github.repository_owner }}/pkg_01"
           to_path: "rocky/${{ env.ROCKY_VERSION }}"
           deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY }}
-          files: "${{ github.workspace }}/rpm/*.rpm"
+          files: "rpm/*.rpm"
           gpg_public_key: "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}"
           repo_baseurl: "${{ vars.PKG_01_CENTRAL_BASEURL }}"
         env:
