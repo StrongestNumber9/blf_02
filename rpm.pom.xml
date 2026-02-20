@@ -122,17 +122,4 @@
       </plugin>
     </plugins>
   </build>
-  <!-- Required when publishing to GitHub Packages -->
-  <profiles>
-    <profile>
-      <id>publish-github-packages</id>
-      <distributionManagement>
-        <repository>
-          <id>github</id>
-          <name>GitHub Packages</name>
-          <url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
-        </repository>
-      </distributionManagement>
-    </profile>
-  </profiles>
 </project>

@@ -44,14 +44,8 @@ jobs:
           echo "${{ secrets.RPM_SIGNING_PRIVATE_KEY }}" | gpg --batch --import;
           echo "%_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase \"%{getenv:RPM_SIGNING_PASSPHRASE}\"" >> "${HOME}/.rpmmacros";
 
-      - name: DEBUG
-        run: |
-          find . -type f;
-          echo "------>";
-          find ${{ github.workspace }} -type f;
-
-      - name: Build, sign and deploy rpm
-        run: mvn --batch-mode -Drevision=${{ github.event.release.tag_name }} -Dsha1= -Dchangelist= -Ppublish-github-packages -f rpm.pom.xml package deploy
+      - name: Build and sign the rpm
+        run: mvn --batch-mode -Drevision=${{ github.event.release.tag_name }} -Dsha1= -Dchangelist= -Ppublish-github-packages -f rpm.pom.xml package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OS_VERSION: ${{ matrix.os }}
