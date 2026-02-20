@@ -29,5 +29,4 @@ jobs:
           autoreconf -fvi;
           CFLAGS="-mavx2 -O3" bash configure;
           make;
-          make install;
-          ls -laF .;
+          make install DESTDIR="${{ github.workspace }}/buildroot";
