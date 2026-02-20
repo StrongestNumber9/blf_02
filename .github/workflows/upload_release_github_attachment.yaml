@@ -56,6 +56,9 @@ jobs:
         with:
           files: target/rpm/com.teragrep-blf_02/RPMS/x86_64/com.teragrep-blf_02-*.rpm
 
+      - name: Create tempdir for dfg_01
+        run: mkdir --parents "${{ runner.temp }}"
+
       - name: Update pkg_01 releases repository
         uses: teragrep/dfg_01@3.3.0
         with:
