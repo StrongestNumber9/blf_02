@@ -35,7 +35,7 @@ jobs:
         run: docker build . --tag builder -f "Dockerfile.${{ matrix.os }}"
 
       - name: Build project
-        run: docker run -v ${{ github.workspace }}:/code:Z builder
+        run: docker run -v "${{ github.workspace }}:/code:Z" builder
 
       - name: Prepare RPM GPG signing
         run: |
