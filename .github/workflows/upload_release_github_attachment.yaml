@@ -44,7 +44,7 @@ jobs:
           autoreconf -fvi;
           CFLAGS="-mavx2 -O3" bash configure;
           make;
-          make install DESTDIR="${{ github.workspace }}/buildroot";
+          make install DESTDIR="$(pwd)/buildroot";
           mvn --batch-mode -Dos_version=${{ env.ROCKY_VERSION }} -Drevision=${{ github.event.release.tag_name }} -Dsha1= -Dchangelist= -f rpm.pom.xml package;
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
